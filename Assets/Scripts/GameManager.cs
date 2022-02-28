@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
     public float xRigth = 1f;
     private float elapsedTime = 0f;
 
+    public static Queue<GameObject> tilesQueue = new Queue<GameObject>();
+    private GameObject nextTile;
+    private bool tilesMoving;
+
+    public Vector3 targetTilesPosition = Vector3.zero;
+
     private void Awake() {
         if(instance != null){
             Destroy(gameObject);
@@ -27,27 +33,54 @@ public class GameManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        
+    {        
+        // init tiles to start game
+        for (int i = 0; i < 6;i++){
+            GameObject tile = InitTileRandomly();
+            tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, i * 5);
+            tilesQueue.Enqueue(tile);
+        }
+        nextTile = tilesQueue.Dequeue();
+        Time.timeScale = 0;
+    }
+
+    IEnumerator InitialDelayToArrangeTilesCoroutine(){
+        yield return new WaitForSeconds(tileSpawnDelay * 6);
     }
 
     // Update is called once per frame
     void Update()
     {
-        elapsedTime += Time.deltaTime;
-        if(elapsedTime >= tileSpawnDelay){
-            elapsedTime = 0f;
-            InitTileRandomly();
+        if(nextTile != null){
+            if(Time.timeScale == 1 && nextTile.transform.position.z < targetTilesPosition.z + 0.5){
+                nextTile = tilesQueue.Dequeue();
+                Debug.Log("queue len: " + GameManager.tilesQueue.Count);
+            }
+        }
+
+        if(Input.GetMouseButton(0)){
+            if(!tilesMoving){
+                tilesMoving = true;
+                Time.timeScale = 1;
+            }
+            elapsedTime += Time.deltaTime;
+            if(elapsedTime >= tileSpawnDelay){
+                elapsedTime = 0f;
+                tilesQueue.Enqueue(InitTileRandomly());
+                Debug.Log("queue len: " + GameManager.tilesQueue.Count);
+            }
+        }
+        else{
+            if(tilesMoving){
+                tilesMoving = false;
+                Time.timeScale = 0;
+            }
         }
     }
 
-    IEnumerator InitTileCoroutine()
-    {
-        yield return new WaitForSeconds(tileSpawnDelay);        
-    }
-
-    private void InitTileRandomly(){
+    private GameObject InitTileRandomly(){
         float xPos = Random.Range(xLeft, xRigth);
         GameObject tile = Instantiate(tilePrefab, new Vector3(xPos, tileInitPosition.position.y, tileInitPosition.position.z), Quaternion.identity);
+        return tile;
     }
 }

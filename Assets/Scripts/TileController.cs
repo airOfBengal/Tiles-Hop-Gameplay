@@ -12,8 +12,8 @@ public class TileController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        if(transform.position.z <= GameManager.instance.tileDestroyPosition.position.z){
+    {        
+        if(transform.position.z <= GameManager.instance.tileDestroyPosition.position.z){            
             Destroy(gameObject);
         }
         transform.position = transform.position + Vector3.back * Time.deltaTime * GameManager.instance.tileMoveSpeed;

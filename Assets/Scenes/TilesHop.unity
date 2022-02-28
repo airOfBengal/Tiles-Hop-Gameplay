@@ -396,6 +396,7 @@ MonoBehaviour:
   tileDestroyPosition: {fileID: 627564811}
   xLeft: -1
   xRigth: 1
+  targetTilesPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1861370448
 Transform:
   m_ObjectHideFlags: 0
