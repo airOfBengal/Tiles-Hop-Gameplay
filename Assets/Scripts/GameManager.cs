@@ -17,10 +17,11 @@ public class GameManager : MonoBehaviour
     private float elapsedTime = 0f;
 
     public static Queue<GameObject> tilesQueue = new Queue<GameObject>();
-    private GameObject nextTile;
+    public GameObject nextTile;
     private bool tilesMoving;
 
     public Vector3 targetTilesPosition = Vector3.zero;
+    public BounceController bounceController;
 
     private void Awake() {
         if(instance != null){
@@ -41,7 +42,9 @@ public class GameManager : MonoBehaviour
             tilesQueue.Enqueue(tile);
         }
         nextTile = tilesQueue.Dequeue();
-        Time.timeScale = 0;
+        bounceController.SetBall(new Vector3(nextTile.transform.position.x, nextTile.transform.position.y + 1, nextTile.transform.position.z),
+                nextTile.transform.position.z / tileMoveSpeed);
+        Time.timeScale = 0;        
     }
 
     IEnumerator InitialDelayToArrangeTilesCoroutine(){
@@ -54,7 +57,6 @@ public class GameManager : MonoBehaviour
         if(nextTile != null){
             if(Time.timeScale == 1 && nextTile.transform.position.z < targetTilesPosition.z + 0.5){
                 nextTile = tilesQueue.Dequeue();
-                Debug.Log("queue len: " + GameManager.tilesQueue.Count);
             }
         }
 
@@ -62,6 +64,7 @@ public class GameManager : MonoBehaviour
             if(!tilesMoving){
                 tilesMoving = true;
                 Time.timeScale = 1;
+                bounceController.startTime = Time.time;
             }
             elapsedTime += Time.deltaTime;
             if(elapsedTime >= tileSpawnDelay){
