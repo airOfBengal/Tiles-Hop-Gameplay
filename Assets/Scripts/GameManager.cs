@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
         //}
 
         if(Input.GetMouseButton(0)){
+            
             if(!tilesMoving){
                 tilesMoving = true;
                 Time.timeScale = 1;

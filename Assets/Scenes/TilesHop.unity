@@ -231,9 +231,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b39bd80bbde444e4b86e3057e4b04fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startRefPosition: {fileID: 0}
+  startRefPosition: {x: 0, y: 0, z: 0}
   endRefPosition: {fileID: 2095774836}
-  distanceToJump: 5
+  timeToJump: 5
+  startTime: 0
+  ballDeltaPositionX: 0.05
 --- !u!1 &519565051
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,6 +509,7 @@ MonoBehaviour:
   tileDestroyPosition: {fileID: 627564811}
   xLeft: -1
   xRigth: 1
+  nextTile: {fileID: 0}
   targetTilesPosition: {x: 0, y: 0, z: 0}
   bounceController: {fileID: 489344598}
 --- !u!4 &1861370448
