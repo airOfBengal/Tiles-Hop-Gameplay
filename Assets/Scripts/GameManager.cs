@@ -47,18 +47,15 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;        
     }
 
-    IEnumerator InitialDelayToArrangeTilesCoroutine(){
-        yield return new WaitForSeconds(tileSpawnDelay * 6);
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if(nextTile != null){
-            if(Time.timeScale == 1 && nextTile.transform.position.z < targetTilesPosition.z + 0.5){
-                nextTile = tilesQueue.Dequeue();
-            }
-        }
+        //if(nextTile != null){
+        //    if(Time.timeScale == 1 && Mathf.Abs(nextTile.transform.position.z-targetTilesPosition.z) <= Mathf.Epsilon){
+        //        nextTile = tilesQueue.Dequeue();
+        //        bounceController.timeToJump = nextTile.transform.position.z / tileMoveSpeed;                
+        //    }
+        //}
 
         if(Input.GetMouseButton(0)){
             if(!tilesMoving){

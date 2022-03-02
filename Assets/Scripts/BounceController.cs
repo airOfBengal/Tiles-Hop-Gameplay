@@ -7,7 +7,7 @@ public class BounceController : MonoBehaviour
     public Vector3 startRefPosition;
     public Transform endRefPosition;
 
-    public float distanceToJump = 5f;
+    public float timeToJump = 5f;
     private float fraction = 0f;
     private Vector3 startPos;
     private Vector3 endPos;
@@ -20,18 +20,21 @@ public class BounceController : MonoBehaviour
         // Vector3 startTilePos = GameManager.instance.nextTile.transform.position;
         // startRefPosition = new Vector3(startTilePos.x, startTilePos.y + 1f, startTilePos.z);
         // startPos = startRefPosition;
-        endPos = endRefPosition.position;
+        //endPos = endRefPosition.position;
         //startTime = Time.time;
-        // distanceToJump = GameManager.instance.nextTile.transform.position.z;
-        // journeyTime = (distanceToJump / 3) * 2;
+        // timeToJump = GameManager.instance.nextTile.transform.position.z;
+        // journeyTime = (timeToJump / 3) * 2;
         // transform.position = startPos;
+        journeyTime = 1;
     }
 
     public void SetBall(Vector3 startRPos, float distToJump){
         startRefPosition = startRPos;
         startPos = startRPos;
-        distanceToJump = distToJump;
-        journeyTime = (distanceToJump / 3) * 2;
+        endPos = endRefPosition.position;
+        timeToJump = distToJump;
+        journeyTime = (timeToJump / 3) * 2;
+        //journeyTime = timeToJump / 2;
         startTime = Time.time;
         transform.position = startRPos;
     }
@@ -40,23 +43,29 @@ public class BounceController : MonoBehaviour
     void Update()
     {
         if(Time.timeScale == 1){
-            fraction = (Time.time - startTime) / journeyTime;
-            transform.position = Vector3.Slerp(startPos, endPos, fraction);
+            fraction = ((Time.time - startTime)) / journeyTime;
+            transform.position = Vector3.Lerp(startPos, endPos, fraction);
             //Debug.Log("transform position y: " + transform.position.y);
 
-            if(Mathf.Abs(transform.position.y - startRefPosition.y) <= Mathf.Epsilon){
+            if (Mathf.Abs(transform.position.y - startRefPosition.y) <= Mathf.Epsilon){
+                GameObject nextTile = GameManager.tilesQueue.Dequeue();
+                timeToJump = nextTile.transform.position.z / GameManager.instance.tileMoveSpeed;
+
                 startTime = Time.time;
                 startPos = startRefPosition;
                 endPos = endRefPosition.position;
-                journeyTime = (distanceToJump / 3) * 2;
+                journeyTime = (timeToJump / 3) * 2;
+                //journeyTime = timeToJump / 2;
             }
             else if(Mathf.Abs(transform.position.y - endRefPosition.position.y) <= Mathf.Epsilon){
                 startTime = Time.time;
                 startPos = endRefPosition.position;
                 endPos = startRefPosition;
-                journeyTime = (distanceToJump / 3);
-            }     
-        }   
+                journeyTime = (timeToJump / 3);
+                //journeyTime = timeToJump / 2;
+            }
+            
+        }
     }
 
     private void OnCollisionEnter(Collision other) {
