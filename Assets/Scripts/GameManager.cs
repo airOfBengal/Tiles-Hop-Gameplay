@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
         // init tiles to start game
         for (int i = 0; i < 6;i++){
             GameObject tile = InitTileRandomly();
-            tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, i * 5);
+            tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, i * 3);
             tilesQueue.Enqueue(tile);
         }
         nextTile = tilesQueue.Dequeue();
@@ -50,12 +50,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if(nextTile != null){
-        //    if(Time.timeScale == 1 && Mathf.Abs(nextTile.transform.position.z-targetTilesPosition.z) <= Mathf.Epsilon){
-        //        nextTile = tilesQueue.Dequeue();
-        //        bounceController.timeToJump = nextTile.transform.position.z / tileMoveSpeed;                
-        //    }
-        //}
 
         if(Input.GetMouseButton(0)){
             
@@ -77,6 +71,11 @@ public class GameManager : MonoBehaviour
                 Time.timeScale = 0;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }            
     }
 
     private GameObject InitTileRandomly(){
