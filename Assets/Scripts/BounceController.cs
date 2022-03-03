@@ -98,10 +98,4 @@ public class BounceController : MonoBehaviour
     {
         transform.position = new Vector3(ballPositionX, transform.position.y, transform.position.z);
     }
-
-    private void OnCollisionEnter(Collision other) {
-        if(Time.timeScale == 1 && other.gameObject.CompareTag("Tile")){
-            startRefPosition = new Vector3(transform.position.x, startRefPosition.y + 1, startRefPosition.z);
-        }
-    }
 }

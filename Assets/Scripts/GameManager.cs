@@ -8,7 +8,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public GameObject tilePrefab;
-    public float tileSpawnDelay = 1f;
+    public float tileSpawnDelayMin = 0.1f;
+    public float tileSpawnDelayMax = 1f;
+    private float tileSpawnDelay = 0f;
     public float tileMoveSpeed = 10f;
     public Transform tileInitPosition;
     public Transform tileDestroyPosition;
@@ -42,7 +44,8 @@ public class GameManager : MonoBehaviour
             tilesQueue.Enqueue(tile);
         }
         nextTile = tilesQueue.Dequeue();
-        bounceController.SetBall(new Vector3(nextTile.transform.position.x, nextTile.transform.position.y + 1, nextTile.transform.position.z),
+        // 0.7 = ball radius + half of tile height
+        bounceController.SetBall(new Vector3(nextTile.transform.position.x, nextTile.transform.position.y + 0.7f, nextTile.transform.position.z),
                 nextTile.transform.position.z / tileMoveSpeed);
         Time.timeScale = 0;        
     }
@@ -61,6 +64,7 @@ public class GameManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             if(elapsedTime >= tileSpawnDelay){
                 elapsedTime = 0f;
+                tileSpawnDelay = Random.Range(tileSpawnDelayMin, tileSpawnDelayMax);
                 tilesQueue.Enqueue(InitTileRandomly());
                 Debug.Log("queue len: " + GameManager.tilesQueue.Count);
             }
