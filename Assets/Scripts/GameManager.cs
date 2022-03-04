@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public GameObject tilePrefab;
+    public GameObject ballPrefab;
     public float tileSpawnDelayMin = 0.1f;
     public float tileSpawnDelayMax = 1f;
     private float tileSpawnDelay = 0f;
@@ -24,8 +25,11 @@ public class GameManager : MonoBehaviour
     private bool tilesMoving;
 
     public Vector3 targetTilesPosition = Vector3.zero;
-    public BounceController bounceController;
+    private BounceController bounceController;
     public GameObject ui;
+
+    public Transform ballEndRefPosition;
+    private GameObject ball;
 
     private void Awake() {
         if(instance != null){
@@ -34,22 +38,31 @@ public class GameManager : MonoBehaviour
         else{
             instance = this;
         }
+        DontDestroyOnLoad(this);
     }
 
     // Start is called before the first frame update
     void Start()
-    {        
+    {
+        Init();
+    }
+
+    public void Init()
+    {
         // init tiles to start game
-        for (int i = 0; i < 6;i++){
+        for (int i = 0; i < 6; i++)
+        {
             GameObject tile = InitTileRandomly();
             tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, i * 3);
             tilesQueue.Enqueue(tile);
         }
         nextTile = tilesQueue.Dequeue();
+        ball = Instantiate(ballPrefab);
+        bounceController = ball.GetComponent<BounceController>();
         // 0.7 = ball radius + half of tile height
         bounceController.SetBall(new Vector3(nextTile.transform.position.x, nextTile.transform.position.y + 0.7f, nextTile.transform.position.z),
-                nextTile.transform.position.z / tileMoveSpeed);
-        Time.timeScale = 0;        
+                ballEndRefPosition.position, (nextTile.transform.position.z - 0.2f) / tileMoveSpeed);
+        Time.timeScale = 0;
     }
 
     // Update is called once per frame
@@ -80,7 +93,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Application.Quit();
+            QuitApp();
         }            
     }
 
@@ -101,12 +114,32 @@ public class GameManager : MonoBehaviour
         // check if the target is in the UI
         foreach (RaycastResult r in results)
         {
-            bool isUIClick = r.gameObject.transform.IsChildOf(this.ui.transform);
+            bool isUIClick = r.gameObject.transform.IsChildOf(this.ui.transform) ||
+                r.gameObject.transform.IsChildOf(UIManager.instance.gameOverPanelGO.transform);
             if (isUIClick)
             {
                 return true;
             }
         }
         return false;
+    }
+
+    public void QuitApp()
+    {
+        Application.Quit();
+    }
+
+    public void OnGameOver()
+    {
+        if(ball != null)
+        {
+            Destroy(ball);
+        }
+        tilesQueue.Clear();
+        GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
+        foreach(GameObject tile in tiles)
+        {
+            Destroy(tile);
+        }
     }
 }
