@@ -1196,6 +1196,7 @@ MonoBehaviour:
   nextTile: {fileID: 0}
   targetTilesPosition: {x: 0, y: 0, z: 0}
   bounceController: {fileID: 489344598}
+  ui: {fileID: 1073485437}
 --- !u!4 &1861370448
 Transform:
   m_ObjectHideFlags: 0

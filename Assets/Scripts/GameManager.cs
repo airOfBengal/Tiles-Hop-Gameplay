@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
 
     public Vector3 targetTilesPosition = Vector3.zero;
     public BounceController bounceController;
+    public GameObject ui;
 
     private void Awake() {
         if(instance != null){
@@ -54,7 +56,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
-        if(Input.GetMouseButton(0)){
+        if(Input.GetMouseButton(0) && !IsPointerOverUIObject()){
             
             if(!tilesMoving){
                 tilesMoving = true;
@@ -86,5 +88,25 @@ public class GameManager : MonoBehaviour
         float xPos = Random.Range(xLeft, xRigth);
         GameObject tile = Instantiate(tilePrefab, new Vector3(xPos, tileInitPosition.position.y, tileInitPosition.position.z), Quaternion.identity);
         return tile;
+    }
+
+    private bool IsPointerOverUIObject()
+    {
+        // get current pointer position and raycast it
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+        // check if the target is in the UI
+        foreach (RaycastResult r in results)
+        {
+            bool isUIClick = r.gameObject.transform.IsChildOf(this.ui.transform);
+            if (isUIClick)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
