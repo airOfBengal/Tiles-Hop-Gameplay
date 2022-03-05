@@ -16,6 +16,7 @@ public class BounceController : MonoBehaviour
     private Vector3 prevTouchPos;
     private float ballPositionX = 0f;
     public float ballDeltaPositionX = 0.1f;
+    public float ballMoveSensitivityReduceValue = 0.1f;
 
     private float radius;
     private bool isHittingHighway;
@@ -51,11 +52,11 @@ public class BounceController : MonoBehaviour
         isHittingHighway = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         //if (Time.timeScale == 1){
-        if (GameManager.instance.isRunning) {
+        if (GameManager.instance.isRunning)
+        {
             if (Input.GetMouseButton(0))
             {
                 // control ball drag left-right         
@@ -74,13 +75,29 @@ public class BounceController : MonoBehaviour
                     ballPositionX += ballDeltaPositionX;
                 }
             }
+            //if (Input.touchCount > 0)
+            //{
+            //    Touch touch = Input.GetTouch(0);
+
+            //    int direction = (touch.position.x > (Screen.width / 2)) ? 1 : -1;
+            //    if(direction > 0)
+            //    {
+            //        endRefPosition = new Vector3(endRefPosition.x + ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
+            //    }
+            //    else
+            //    {
+            //        endRefPosition = new Vector3(endRefPosition.x - ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
+            //    }
+            //    MovePaddle(direction);
+            //}
 
             fraction = ((Time.time - startTime)) / journeyTime;
             transform.position = Vector3.Lerp(startPos, endPos, fraction);
-            
+
             //Debug.Log("transform position y: " + transform.position.y);
 
-            if (Mathf.Abs(transform.position.y - startRefPosition.y) <= Mathf.Epsilon){
+            if (Mathf.Abs(transform.position.y - startRefPosition.y) <= Mathf.Epsilon)
+            {
                 if (isHittingHighway)
                 {
                     GameManager.instance.isRunning = false;
@@ -98,7 +115,7 @@ public class BounceController : MonoBehaviour
                 }
 
                 GameObject nextTile = GameManager.tilesQueue.Dequeue();
-                timeToJump = (nextTile.transform.position.z - 0.05f) / GameManager.instance.tileMoveSpeed;                
+                timeToJump = (nextTile.transform.position.z - 0.05f) / GameManager.instance.tileMoveSpeed;
 
                 startTime = Time.time;
                 startPos = startRefPosition;
@@ -106,23 +123,32 @@ public class BounceController : MonoBehaviour
                 journeyTime = (timeToJump / 3) * 2;
                 //journeyTime = timeToJump / 2;
             }
-            else if(Mathf.Abs(transform.position.y - endRefPosition.y) <= Mathf.Epsilon){
+            else if (Mathf.Abs(transform.position.y - endRefPosition.y) <= Mathf.Epsilon)
+            {
                 startTime = Time.time;
                 startPos = endRefPosition;
                 endPos = startRefPosition;
                 journeyTime = (timeToJump / 3);
                 //journeyTime = timeToJump / 2;
             }
-            
+
         }
+    }
+
+    void MovePaddle(int direction)
+    {
+        float xPos = transform.position.x + (direction * Time.deltaTime * 5f);
+        //playerPos = new Vector3(Mathf.Clamp(xPos, -2f, 2f), transform.position.y, transform.position.z);
+        transform.position = new Vector3(Mathf.Clamp(xPos, -2f, 2f), transform.position.y, transform.position.z);
     }
 
     private void FixedUpdate()
     {
-        //if(Time.timeScale == 1)
-        if(GameManager.instance.isRunning)
+        if (GameManager.instance.isRunning)
         {
+
             CheckIfHit();
+
         }
     }
 
@@ -167,8 +193,8 @@ public class BounceController : MonoBehaviour
     {
         if (GameManager.instance.isRunning)
         {
-            transform.position = new Vector3(ballPositionX, transform.position.y, transform.position.z);
-        }        
+            transform.position = new Vector3(Mathf.Clamp(ballPositionX, -2, 2), transform.position.y, transform.position.z);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

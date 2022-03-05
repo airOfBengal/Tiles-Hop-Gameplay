@@ -109,7 +109,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startRefPosition: {x: 0, y: 0, z: 0}
-  endRefPosition: {fileID: 0}
+  endRefPosition: {x: 0, y: 0, z: 0}
   timeToJump: 5
   startTime: 0
-  ballDeltaPositionX: 0.05
+  ballDeltaPositionX: 0.12
+  ballMoveSensitivityReduceValue: 0.1

@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public GameObject ui;
 
     public Transform ballEndRefPosition;
-    private GameObject ball;
+    public GameObject ball;
     private float startTime;
     public float tileMoveSpeedDefault = 10f;
     public Color[] tileColors;
