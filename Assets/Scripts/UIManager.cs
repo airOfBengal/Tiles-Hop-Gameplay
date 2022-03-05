@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public Text tilesCountText;
     public GameObject gameOverPanelGO;
+    public Text diamondCountText;
+    public GameObject sensitivityButtonGO;
 
     private void Awake()
     {

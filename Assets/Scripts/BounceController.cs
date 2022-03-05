@@ -86,7 +86,9 @@ public class BounceController : MonoBehaviour
                     GameManager.instance.isRunning = false;
                     UIManager.instance.gameOverPanelGO.SetActive(true);
                     GameManager.instance.OnGameOver();
-                    ScoreBoard.SaveTilesCount();
+                    //ScoreBoard.SaveTilesCount();
+                    ScoreBoard.tilesCount = 0;
+                    ScoreBoard.SaveDiamondCount();
                     return;
                 }
                 else
@@ -167,5 +169,17 @@ public class BounceController : MonoBehaviour
         {
             transform.position = new Vector3(ballPositionX, transform.position.y, transform.position.z);
         }        
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("ball collide");
+        if (collision.transform.CompareTag("Diamond"))
+        {
+            Destroy(collision.gameObject);
+            ScoreBoard.diamondCount++;
+            UIManager.instance.diamondCountText.text = ScoreBoard.diamondCount.ToString();
+            Debug.Log("dimonds: " + ScoreBoard.diamondCount);
+        }
     }
 }

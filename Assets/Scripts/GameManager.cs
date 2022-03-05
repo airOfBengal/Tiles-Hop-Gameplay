@@ -40,6 +40,15 @@ public class GameManager : MonoBehaviour
 
     public volatile bool isRunning;
 
+    public GameObject diamondPrefab;
+    public GameObject starPrefab;
+    public float diamondSpawnMinDistance = 6f;
+    public float diamondSpawnMinDelay = 15f;
+    private float diamondSpawnStartTime;
+
+    public Transform diamInitPos;
+    public Transform diamEndPos;
+
     private void Awake() {
         if(instance != null){
             Destroy(gameObject);
@@ -59,10 +68,14 @@ public class GameManager : MonoBehaviour
             materialColors[i] = tileColors[i];
         }
         Init();
+        //SpawnDiamonds(diamInitPos.position, diamEndPos.position);
     }
 
     public void Init()
     {
+        UIManager.instance.sensitivityButtonGO.SetActive(true);
+        UIManager.instance.tilesCountText.text = ScoreBoard.tilesCount.ToString();
+        diamondSpawnStartTime = Time.time;
         tileSpawnDelayMin = tileSpawnDelayMinInit;
 
         currentTileColorIndex = Random.Range(0, tileColors.Length);
@@ -91,12 +104,26 @@ public class GameManager : MonoBehaviour
         if(Input.GetMouseButtonDown(0) && !isRunning && !IsPointerOverUIObject())
         {
             isRunning = true;
+            UIManager.instance.sensitivityButtonGO.SetActive(false);
         }
 
         //if(Input.GetMouseButton(0) && !IsPointerOverUIObject()){
-        if (isRunning) { 
+        if (isRunning) {
+            // check for diamond spawning
+            if (tilesQueue.Count > 3 && (Time.time - diamondSpawnStartTime) > diamondSpawnMinDelay)
+            {
+                GameObject[] tiles = tilesQueue.ToArray();
+                Vector3 tile1Pos = tiles[tiles.Length - 2].transform.position;
+                Vector3 tile2Pos = tiles[tiles.Length - 1].transform.position;
+                if (tile2Pos.z - tile1Pos.z >= diamondSpawnMinDistance && Random.Range(0, 2) == 1)
+                {
+                    SpawnDiamonds(tile1Pos, tile2Pos);
+                }
+                diamondSpawnStartTime = Time.time;
+            }
+
             // increase time after every tileMoveSpeedDeltaTime
-            if(Time.time - startTime > tileMoveSpeedDeltaTime)
+            if (Time.time - startTime > tileMoveSpeedDeltaTime)
             {
                 // decrease tile spawn delay min after every tileMoveSpeedDeltaTime
                 tileSpawnDelayMin = Mathf.Max(tileSpawnDelayMinDefault, tileSpawnDelayMin - (tileMoveSpeedDelta / 20));
@@ -180,5 +207,51 @@ public class GameManager : MonoBehaviour
         {
             Destroy(tile);
         }
+
+        // clear diamonds if any
+        GameObject[] diamonds = GameObject.FindGameObjectsWithTag("Diamond");
+        foreach(GameObject diamond in diamonds)
+        {
+            Destroy(diamond);
+        }
+    }
+
+    private void SpawnDiamonds(Vector3 startPos, Vector3 endPos)
+    {
+        Vector3[] spawnPositions = GetDiamondInitPositions(startPos, endPos, Random.Range(3, 7));
+        foreach(Vector3 pos in spawnPositions)
+        {
+            Instantiate(diamondPrefab, pos, Quaternion.identity);
+        }
+    }
+
+    private Vector3[] GetDiamondInitPositions(Vector3 startPos, Vector3 endPos, int noOfDiamond)
+    {
+        Vector3[] positions = new Vector3[noOfDiamond];
+        float distance = Mathf.Abs(startPos.z - endPos.z);
+        float intervalZ = distance / (noOfDiamond+1);
+        float intervalY = ballEndRefPosition.position.y / (noOfDiamond + 1);
+        float intervalX = (endPos.x - startPos.x) / (noOfDiamond + 1);
+
+        float i = intervalZ;
+        int j = 1;
+        // go up
+        while(i <= distance/ 2)
+        {
+            positions[j - 1] = new Vector3(startPos.x + intervalX * j, startPos.y + intervalY * j, startPos.z + intervalZ * j);
+            i += intervalZ;
+            j++;
+        }
+        // go down
+        int k = 1;
+        while(i < distance)
+        {
+            if(j -1 < positions.Length)
+                positions[j - 1] = new Vector3(startPos.x + intervalX * j, ballEndRefPosition.position.y - intervalY * k, startPos.z + intervalZ * j);
+            i += intervalZ;
+            j++;
+            k++;
+        }
+        return positions;
     }
 }
