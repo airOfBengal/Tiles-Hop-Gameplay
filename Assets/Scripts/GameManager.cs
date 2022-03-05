@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject tilePrefab;
     public GameObject ballPrefab;
+    public float tileSpawnDelayMinDefault = 0.05f;
+    public float tileSpawnDelayMinInit = 0.5f;
     public float tileSpawnDelayMin = 0.1f;
     public float tileSpawnDelayMax = 1f;
     private float tileSpawnDelay = 0f;
@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour
 
     public void Init()
     {
+        tileSpawnDelayMin = tileSpawnDelayMinInit;
+
         currentTileColorIndex = Random.Range(0, tileColors.Length);
         startTime = Time.time;
         tileMoveSpeed = tileMoveSpeedDefault;
@@ -96,6 +98,9 @@ public class GameManager : MonoBehaviour
             // increase time after every tileMoveSpeedDeltaTime
             if(Time.time - startTime > tileMoveSpeedDeltaTime)
             {
+                // decrease tile spawn delay min after every tileMoveSpeedDeltaTime
+                tileSpawnDelayMin = Mathf.Max(tileSpawnDelayMinDefault, tileSpawnDelayMin - (tileMoveSpeedDelta / 20));
+                //
                 tileMoveSpeed += tileMoveSpeedDelta;                
                 currentTileColorIndex++;
                 currentTileColorIndex = currentTileColorIndex == materialColors.Length ? 0 : currentTileColorIndex;
