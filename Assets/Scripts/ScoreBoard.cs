@@ -14,6 +14,7 @@ public class ScoreBoard : MonoBehaviour
         diamondCount = long.Parse(PlayerPrefs.GetString("diamond", "0"));
         starCount = long.Parse(PlayerPrefs.GetString("star", "0"));
         tilesCount = long.Parse(PlayerPrefs.GetString("tiles", "0"));
+        UIManager.instance.tilesCountText.text = tilesCount.ToString();
     }
 
  

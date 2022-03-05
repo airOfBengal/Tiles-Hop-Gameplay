@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public float tileSpawnDelayMax = 1f;
     private float tileSpawnDelay = 0f;
     public float tileMoveSpeed = 10f;
+    public float tileMoveSpeedDelta = 5f;
+    public float tileMoveSpeedDeltaTime = 30f; // 30 seconds
     public Transform tileInitPosition;
     public Transform tileDestroyPosition;
     public float xLeft = -1f;
@@ -30,6 +32,13 @@ public class GameManager : MonoBehaviour
 
     public Transform ballEndRefPosition;
     private GameObject ball;
+    private float startTime;
+    public float tileMoveSpeedDefault = 10f;
+    public Color[] tileColors;
+    private Color[] materialColors;
+    private int currentTileColorIndex;
+
+    public volatile bool isRunning;
 
     private void Awake() {
         if(instance != null){
@@ -44,11 +53,20 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        materialColors = new Color[tileColors.Length];
+        for(int i = 0; i < materialColors.Length; i++)
+        {
+            materialColors[i] = tileColors[i];
+        }
         Init();
     }
 
     public void Init()
     {
+        currentTileColorIndex = Random.Range(0, tileColors.Length);
+        startTime = Time.time;
+        tileMoveSpeed = tileMoveSpeedDefault;
+
         // init tiles to start game
         for (int i = 0; i < 6; i++)
         {
@@ -68,8 +86,21 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetMouseButtonDown(0) && !isRunning && !IsPointerOverUIObject())
+        {
+            isRunning = true;
+        }
 
-        if(Input.GetMouseButton(0) && !IsPointerOverUIObject()){
+        //if(Input.GetMouseButton(0) && !IsPointerOverUIObject()){
+        if (isRunning) { 
+            // increase time after every tileMoveSpeedDeltaTime
+            if(Time.time - startTime > tileMoveSpeedDeltaTime)
+            {
+                tileMoveSpeed += tileMoveSpeedDelta;                
+                currentTileColorIndex++;
+                currentTileColorIndex = currentTileColorIndex == materialColors.Length ? 0 : currentTileColorIndex;
+                startTime = Time.time;
+            }
             
             if(!tilesMoving){
                 tilesMoving = true;
@@ -100,6 +131,9 @@ public class GameManager : MonoBehaviour
     private GameObject InitTileRandomly(){
         float xPos = Random.Range(xLeft, xRigth);
         GameObject tile = Instantiate(tilePrefab, new Vector3(xPos, tileInitPosition.position.y, tileInitPosition.position.z), Quaternion.identity);
+        tile.GetComponent<Renderer>().material.color = materialColors[currentTileColorIndex];
+        //TileController tileController = tile.GetComponent<TileController>();
+        //tileController.SetSpeed(tileMoveSpeed);
         return tile;
     }
 

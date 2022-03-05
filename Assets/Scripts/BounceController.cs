@@ -51,27 +51,31 @@ public class BounceController : MonoBehaviour
         startTime = Time.time;
         transform.position = startRPos;
         ballPositionX = transform.position.x;
+        isHittingHighway = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Time.timeScale == 1){
-            // control ball drag left-right
-            //Debug.Log("mouse x: " + Input.mousePosition.x);
-            Vector3 currentTouchPos = mainCamera.ScreenToViewportPoint(Input.mousePosition);
-            //Debug.Log("world x:" + currentTouchPos.x + " world y:" + currentTouchPos.y + "world z:" + currentTouchPos.z);
-            if(currentTouchPos.x < prevTouchPos.x)
+        //if (Time.timeScale == 1){
+        if (GameManager.instance.isRunning) {
+            if (Input.GetMouseButton(0))
             {
-                endRefPosition = new Vector3(endRefPosition.x - ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
-                prevTouchPos = currentTouchPos;
-                ballPositionX -= ballDeltaPositionX;
-            }
-            else if(currentTouchPos.x > prevTouchPos.x)
-            {
-                endRefPosition = new Vector3(endRefPosition.x + ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
-                prevTouchPos = currentTouchPos;
-                ballPositionX += ballDeltaPositionX;
+                // control ball drag left-right         
+                Vector3 currentTouchPos = mainCamera.ScreenToViewportPoint(Input.mousePosition);
+                //Debug.Log("world x:" + currentTouchPos.x + " world y:" + currentTouchPos.y + "world z:" + currentTouchPos.z);
+                if (currentTouchPos.x < prevTouchPos.x)
+                {
+                    endRefPosition = new Vector3(endRefPosition.x - ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
+                    prevTouchPos = currentTouchPos;
+                    ballPositionX -= ballDeltaPositionX;
+                }
+                else if (currentTouchPos.x > prevTouchPos.x)
+                {
+                    endRefPosition = new Vector3(endRefPosition.x + ballDeltaPositionX, endRefPosition.y, endRefPosition.z);
+                    prevTouchPos = currentTouchPos;
+                    ballPositionX += ballDeltaPositionX;
+                }
             }
 
             fraction = ((Time.time - startTime)) / journeyTime;
@@ -82,6 +86,7 @@ public class BounceController : MonoBehaviour
             if (Mathf.Abs(transform.position.y - startRefPosition.y) <= Mathf.Epsilon){
                 if (isHittingHighway)
                 {
+                    GameManager.instance.isRunning = false;
                     UIManager.instance.gameOverPanelGO.SetActive(true);
                     GameManager.instance.OnGameOver();
                     ScoreBoard.SaveTilesCount();
@@ -115,7 +120,11 @@ public class BounceController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CheckIfHit();
+        //if(Time.timeScale == 1)
+        if(GameManager.instance.isRunning)
+        {
+            CheckIfHit();
+        }
     }
 
     private void CheckIfHit()
@@ -157,6 +166,9 @@ public class BounceController : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.position = new Vector3(ballPositionX, transform.position.y, transform.position.z);
+        if (GameManager.instance.isRunning)
+        {
+            transform.position = new Vector3(ballPositionX, transform.position.y, transform.position.z);
+        }        
     }
 }

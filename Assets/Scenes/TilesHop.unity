@@ -1412,17 +1412,28 @@ MonoBehaviour:
     type: 3}
   ballPrefab: {fileID: 5332304422033694335, guid: 8f2b7b4eaddd05d4e887f463e75b3bf1,
     type: 3}
-  tileSpawnDelayMin: 0.1
+  tileSpawnDelayMin: 0.5
   tileSpawnDelayMax: 1
-  tileMoveSpeed: 10
+  tileMoveSpeed: 5
+  tileMoveSpeedDelta: 2
+  tileMoveSpeedDeltaTime: 30
   tileInitPosition: {fileID: 519565052}
   tileDestroyPosition: {fileID: 627564811}
-  xLeft: -1
-  xRigth: 1
+  xLeft: -1.45
+  xRigth: 1.45
   nextTile: {fileID: 0}
   targetTilesPosition: {x: 0, y: 0, z: 0}
   ui: {fileID: 1073485437}
   ballEndRefPosition: {fileID: 2095774836}
+  tileMoveSpeedDefault: 5
+  tileColors:
+  - {r: 0.24705882, g: 0.65882355, b: 0.1882353, a: 1}
+  - {r: 0.627451, g: 0.65882355, b: 0.1882353, a: 1}
+  - {r: 0.65882355, g: 0.2509804, b: 0.1882353, a: 1}
+  - {r: 0.65882355, g: 0.1882353, b: 0.56078434, a: 1}
+  - {r: 0.21960784, g: 0.1882353, b: 0.65882355, a: 1}
+  - {r: 0.1882353, g: 0.5372549, b: 0.65882355, a: 1}
+  - {r: 0.1882353, g: 0.65882355, b: 0.39215687, a: 1}
 --- !u!4 &1861370448
 Transform:
   m_ObjectHideFlags: 0
